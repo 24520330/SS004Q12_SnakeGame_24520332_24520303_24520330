@@ -42,12 +42,6 @@ void Draw() {
     coord.X = 0;
     coord.Y = 0;
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
-
-    //Di chuyển con trỏ tới góc trên trái để vẽ lại
-    COORD coord;
-    coord.X = 0;
-    coord.Y = 0;
-    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
     // Vẽ tường TRÊN khu vực chơi, sử dụng kí tự "#"
     for (int i = 0; i < WIDTH + 2; ++i) cout << '#';
     cout << '\n';
@@ -110,7 +104,7 @@ void Input() {
         //"X" để thoát chương trình 
         else if (ch == 'X') gameOver = true;
         // '+' giảm thời gian Sleep -> nhanh hơn; '-' tăng thời gian -> chậm hơn
-        else if (ch == '+') {
+        else if (ch == '=') {
             if (gameSpeed > 20) gameSpeed -= 10;
         }
         else if (ch == '-') {
@@ -200,7 +194,7 @@ int main() {
         Draw();
         Input();
         Logic();
-        Sleep(50); //Tốc độ game (Giá trị càng nhỏ --> tốc độ càng tăng)
+        Sleep(gameSpeed); //Tốc độ game (Giá trị càng nhỏ --> tốc độ càng tăng)
     }
 
     //Hiện lại con trỏ chuột
