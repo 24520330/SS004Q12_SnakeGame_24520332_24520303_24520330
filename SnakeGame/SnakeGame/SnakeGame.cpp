@@ -73,19 +73,65 @@ void Input() {
 }
 
 void Logic() {
-    //Di chuyển đuôi (Cập nhập cho đuôi đi theo đầu)
-    //Phần đuôi đầu tiên đi theo đầu, các phần đuôi tiếp theo đi theo đuôi trước nó
+    // Di chuyển đuôi
+    int prevX = tailX[0];
+    int prevY = tailY[0];
+    int prev2X, prev2Y;
+    tailX[0] = headX;
+    tailY[0] = headY;
 
-    //Di chuyển đầu (Di chuyển theo hướng Input())
+    for (int i = 1; i < tailLength; i++) {
+        prev2X = tailX[i];
+        prev2Y = tailY[i];
+        tailX[i] = prevX;
+        tailY[i] = prevY;
+        prevX = prev2X;
+        prevY = prev2Y;
+    }
 
-    //Va chạm tường (Kiểm tra nếu đầu rắn chạm tường thì xuất hiện ở hướng đối diện)
+    // Di chuyển đầu
+    switch (dir) {
+    case LEFT: headX--; break;
+    case RIGHT: headX++; break;
+    case UP: headY--; break;
+    case DOWN: headY++; break;
+    default: break;
+    }
 
-    //Tự va chạm với thân rắn (Kiểm tra nếu đầu rắn va chạm với bất kì phần đuôi rắn thì kết thúc chương trình)
+    // Xuyên tường
+    if (headX >= WIDTH) headX = 0;
+    else if (headX < 0) headX = WIDTH - 1;
 
-    //Va chạm với thức ăn 
-    //Kiểm tra nếu đầu rắn chạm thức ăn thì tăng điểm
-    //Thêm đuôi
-    //Tạo thức ăn tiếp theo không trùng với thân rắn (đầu, đuôi)
+    if (headY >= HEIGHT) headY = 0;
+    else if (headY < 0) headY = HEIGHT - 1;
+
+    // Va chạm thân
+    for (int i = 0; i < tailLength; i++) {
+        if (tailX[i] == headX && tailY[i] == headY) {
+            gameOver = true;
+        }
+    }
+
+    // Ăn thức ăn
+    if (headX == fruitX && headY == fruitY) {
+        score++;
+        tailLength++;
+
+        // Tạo thức ăn mới không trùng đuôi
+        bool valid;
+        do {
+            valid = true;
+            fruitX = rand() % WIDTH;
+            fruitY = rand() % HEIGHT;
+
+            if (fruitX == headX && fruitY == headY) valid = false;
+
+            for (int i = 0; i < tailLength; i++)
+                if (tailX[i] == fruitX && tailY[i] == fruitY)
+                    valid = false;
+
+        } while (!valid);
+    }
 }
 
 int main() {
