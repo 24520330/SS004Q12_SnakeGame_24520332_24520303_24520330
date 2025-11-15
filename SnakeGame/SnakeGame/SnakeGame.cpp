@@ -18,6 +18,7 @@ int tailLength;
 //Các hướng di chuyển
 enum Direction { STOP, LEFT, RIGHT, UP, DOWN };
 Direction dir;
+int gameSpeed = 150;
 
 //Thiết lập trạng thái ban đầu của game
 void Setup() {
@@ -42,36 +43,81 @@ void Draw() {
     coord.Y = 0;
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
 
-    //Vẽ tường TRÊN khu vực chơi, sử dụng kí tự "#"
+    //Di chuyển con trỏ tới góc trên trái để vẽ lại
+    COORD coord;
+    coord.X = 0;
+    coord.Y = 0;
+    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
+    // Vẽ tường TRÊN khu vực chơi, sử dụng kí tự "#"
+    for (int i = 0; i < WIDTH + 2; ++i) cout << '#';
+    cout << '\n';
 
-    //Vẽ tường PHẢI khu vực chơi, sử dụng kí tự "#"
-
-    //Vẽ tường TRÁI khu vực chơi, sử dụng kí tự "#"
+    // Vẽ các hàng trong khu vực chơi
+    for (int y = 0; y < HEIGHT; ++y) {
+        // Vẽ tường TRÁI
+        cout << '#';
+        for (int x = 0; x < WIDTH; ++x) {
+            if (x == headX && y == headY) {
+                // Vẽ đầu rắn
+                cout << 'O';
+            }
+            else if (x == fruitX && y == fruitY) {
+                // Vẽ thức ăn
+                cout << 'F';
+            }
+            else {
+                // Kiểm tra đuôi
+                bool printed = false;
+                for (int k = 0; k < tailLength; ++k) {
+                    if (tailX[k] == x && tailY[k] == y) {
+                        cout << 'o';
+                        printed = true;
+                        break;
+                    }
+                }
+                if (!printed) cout << ' ';
+            }
+        }
+        // Vẽ tường PHẢI
+        cout << '#';
+        cout << '\n';
+    }
 
     //Vẽ tường DƯỚI khu vực chơi, sử dụng kí tự "#"
+    for (int i = 0; i < WIDTH + 2; ++i) cout << '#';
+    cout << '\n';
 
-    //Vẽ đầu rắn
-
-    //Vẽ thức ăn
-
-    //Vẽ đuôi rắn và khoảng trống 
-    //Khoảng trống để ghi đè lên vị trí cũ đoạn đuôi cuối cùng đã đi qua, tránh để lại vệt dài trên màn hình
+    // Hiển thị điểm và tốc độ hiện tại
+    cout << "Score: " << score << "    Speed: " << gameSpeed << "ms (use +/- to adjust)" << '\n';
 }
+
 
 void Input() {
     //Up(W), Down(S), Left(A), Right(D), Quit(X) 
+    if (_kbhit()) {
+        char ch = _getch();
+        // Chuyển thành chữ hoa để xử lý cả chữ thường và hoa
+        if (ch >= 'a' && ch <= 'z') ch = ch - 'a' + 'A';
 
-    //"W" để di chuyển lên (nếu đang di chuyển xuống thì không thể thực hiện)
-    
-    //"A" để di chuyển trái (nếu đang di chuyển phải thì không thể thực hiện)
-    
-    //"D" để di chuyển phải (nếu đang di chuyển trái thì không thể thực hiện)
-    
-    //"S" để di chuyển xuống (nếu đang di chuyển lên thì không thể thực hiện)
-    
-    //"X" để thoát chương trình 
+        //"W" để di chuyển lên (nếu đang di chuyển xuống thì không thể thực hiện)
+        if (ch == 'W' && dir != DOWN) dir = UP;
+        //"A" để di chuyển trái (nếu đang di chuyển phải thì không thể thực hiện)
+        else if (ch == 'A' && dir != RIGHT) dir = LEFT;
+        //"D" để di chuyển phải (nếu đang di chuyển trái thì không thể thực hiện)
+        else if (ch == 'D' && dir != LEFT) dir = RIGHT;
+        //"S" để di chuyển xuống (nếu đang di chuyển lên thì không thể thực hiện)
+        else if (ch == 'S' && dir != UP) dir = DOWN;
+        //"X" để thoát chương trình 
+        else if (ch == 'X') gameOver = true;
+        // '+' giảm thời gian Sleep -> nhanh hơn; '-' tăng thời gian -> chậm hơn
+        else if (ch == '+') {
+            if (gameSpeed > 20) gameSpeed -= 10;
+        }
+        else if (ch == '-') {
+            if (gameSpeed < 2000) gameSpeed += 10;
+        }
+    }
 }
-
 void Logic() {
     //Di chuyển đuôi (Cập nhập cho đuôi đi theo đầu)
     //Phần đuôi đầu tiên đi theo đầu, các phần đuôi tiếp theo đi theo đuôi trước nó
