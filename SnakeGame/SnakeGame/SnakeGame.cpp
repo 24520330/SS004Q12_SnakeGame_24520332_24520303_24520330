@@ -110,7 +110,7 @@ void Input() {
         //"X" để thoát chương trình 
         else if (ch == 'X') gameOver = true;
         // '+' giảm thời gian Sleep -> nhanh hơn; '-' tăng thời gian -> chậm hơn
-        else if (ch == '+') {
+        else if (ch == '+' || ch == '=') {
             if (gameSpeed > 20) gameSpeed -= 10;
         }
         else if (ch == '-') {
